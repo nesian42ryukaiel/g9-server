@@ -51,6 +51,87 @@ app.get("/", (req, res) => {
   res.send("Temporary page for home request; will be deleted later on");
 });
 
+// app.get("/auth", function (req, res) {
+//   const hash = req.headers.authorization.substring(6);
+//   const tok = b64.Base64.decode(hash);
+//   const idpwnm = tok.split(":");
+//   console.log("\n----------------\n");
+//   console.log("direct request for g9 membership");
+//   console.log("\n--NOW PARSING---\n");
+//   console.log(req.headers.authorization);
+//   console.log(hash + " -> " + tok);
+//   console.log("ID: " + idpwnm[0]);
+//   console.log("PW: " + idpwnm[1]);
+//   console.log("Name: " + idpwnm[2]);
+//   console.log("\n----------------\n");
+//   let auth = [false, false, false];
+//   if (idpwnm[0] in memdata) { /* <-- Watch this point, it requires memdata! */
+//     console.log(idpwnm[0] + " exists!");
+//     if (memdata[idpwnm[0]].pw === idpwnm[1]) {
+//       console.log("Valid password!");
+//       auth[1] = true;
+//     } else {
+//       console.log("Wrong password!");
+//     }
+//     if (memdata[idpwnm[0]].name === idpwnm[2]) {
+//       console.log("Extant name!");
+//       auth[2] = true;
+//     } else {
+//       if (memdata[idpwnm[0]].name === "") {
+//         console.log("Not checking for name");
+//       } else {
+//         console.log("Unextant name!");
+//       }
+//     }
+//     auth[0] = true;
+//   } else {
+//     console.log("Unextant ID!");
+//   }
+//   console.log("\n----------------\n");
+//   res.json(auth);
+// });
+// app.get("/g9artdata.json", function (req, res) {
+//   console.log("\n----------------\n");
+//   console.log("direct request for g9 articles");
+//   console.log("\n----------------\n");
+//   res.json(artdata); /* <-- Watch this point, it requires artdata! */
+// });
+app.get("/image/:year/:month/:day/:name", (req, res, next) => {
+  const fileYear = req.params.year;
+  const fileMonth = req.params.month;
+  const fileDay = req.params.day;
+  const fileName = req.params.name;
+  console.log(`Proper image request for ${fileName}.`);
+  res.sendFile(
+    fileName,
+    {
+      root: path.join(__dirname, `./image/${fileYear}/${fileMonth}/${fileDay}`),
+    },
+    function (err) {
+      if (err) {
+        next(err);
+      } else {
+        console.log(`Properly sent: ${fileName}`);
+      }
+    }
+  );
+});
+app.get("/image/:name", (req, res, next) => {
+  const fileName = req.params.name;
+  console.log(`Legacy: Primitive image request for ${fileName}.`);
+  res.sendFile(
+    fileName,
+    { root: path.join(__dirname, "./image") },
+    function (err) {
+      if (err) {
+        next(err);
+      } else {
+        console.log(`Primitively sent: ${fileName}`);
+      }
+    }
+  );
+});
+
 app.listen(port, () => {
   console.log("\n----------------\n");
   console.log(`G9 server app listening at http://localhost:${port}`);
