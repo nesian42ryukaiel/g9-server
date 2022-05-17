@@ -1,9 +1,17 @@
 import express from "express";
+import * as fs from "fs";
+import * as path from "path";
+import { fileURLToPath } from "url";
 import cors from "cors";
 import multer from "multer";
 import Base64 from "./plugins/Base64.js"; // nodemon seems to accept only if ".js" is appended...
 const app = express();
+const corsOptions = {
+  origin: ["http://localhost:9090"],
+  credentials: true,
+};
 const port = 3000;
+const thisServer = `http://127.0.0.1:${port}`;
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const date = new Date();
@@ -28,6 +36,13 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + "-" + uniqueSuffix);
   },
 });
+const upload = multer({ storage: storage });
+// const artdata = JSON.parse(fs.readFileSync("./g9artdata.json", "utf8"));
+// const memdata = JSON.parse(fs.readFileSync("./g9memdata.json", "utf8"));
+
+app.use(cors(corsOptions));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.get("/", (req, res) => {
   console.log("\n----------------\n");
