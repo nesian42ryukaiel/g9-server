@@ -132,6 +132,47 @@ app.get("/image/:name", (req, res, next) => {
   );
 });
 
+// app.post("/auth", (req, res) => {
+//   console.log("\n----------------\n");
+//   console.log("\nNow registering a new member...\n");
+//   console.log(req.body);
+//   console.log("\n----------------\n");
+//   const newmemdata = Object.assign(memdata, req.body);
+//   console.log(newmemdata);
+//   console.log("\n----------------\n");
+//   fs.writeFileSync("./g9memdata.json", JSON.stringify(newmemdata));
+//   res.json(newmemdata);
+// });
+// app.post("/upload", upload.single("image"), function (req, res) {
+//   console.log("\n----------------\n");
+//   console.log(req.file);
+//   console.log(req.body);
+//   console.log("\n----------------\n");
+//   let uploadNextStep = true;
+//   let imagelink = "";
+//   if (uploadNextStep && (req.body.title === "" || req.body.writer === "")) {
+//     uploadNextStep = false;
+//   } else {
+//     imagelink += thisServer + "/" + req.file.path;
+//     console.log(imagelink);
+//   }
+//   const newart = {
+//     id: Date.now(),
+//     image: imagelink,
+//     title: req.body.title,
+//     text: req.body.text,
+//     writer: req.body.writer,
+//   };
+//   const uploadRes = { success: uploadNextStep, article: newart };
+//   if (uploadNextStep) {
+//     console.log(newart);
+//     artdata.push(newart);
+//     console.log(artdata);
+//     fs.writeFileSync("./g9artdata.json", JSON.stringify(artdata));
+//   }
+//   res.send(uploadRes);
+// });
+
 app.listen(port, () => {
   console.log("\n----------------\n");
   console.log(`G9 server app listening at http://localhost:${port}`);
