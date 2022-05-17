@@ -53,7 +53,7 @@ app.get("/", (req, res) => {
 
 // app.get("/auth", function (req, res) {
 //   const hash = req.headers.authorization.substring(6);
-//   const tok = b64.Base64.decode(hash);
+//   const tok = Base64.decode(hash);
 //   const idpwnm = tok.split(":");
 //   console.log("\n----------------\n");
 //   console.log("direct request for g9 membership");
