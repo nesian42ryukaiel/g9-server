@@ -37,8 +37,8 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage: storage });
-// const artdata = JSON.parse(fs.readFileSync("./g9artdata.json", "utf8"));
-// const memdata = JSON.parse(fs.readFileSync("./g9memdata.json", "utf8"));
+const artdata = JSON.parse(fs.readFileSync("./db/g9artdata.json", "utf8"));
+const memdata = JSON.parse(fs.readFileSync("./db/g9memdata.json", "utf8"));
 
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
@@ -51,51 +51,52 @@ app.get("/", (req, res) => {
   res.send("Temporary page for home request; will be deleted later on");
 });
 
-// app.get("/auth", function (req, res) {
-//   const hash = req.headers.authorization.substring(6);
-//   const tok = Base64.decode(hash);
-//   const idpwnm = tok.split(":");
-//   console.log("\n----------------\n");
-//   console.log("direct request for g9 membership");
-//   console.log("\n--NOW PARSING---\n");
-//   console.log(req.headers.authorization);
-//   console.log(hash + " -> " + tok);
-//   console.log("ID: " + idpwnm[0]);
-//   console.log("PW: " + idpwnm[1]);
-//   console.log("Name: " + idpwnm[2]);
-//   console.log("\n----------------\n");
-//   let auth = [false, false, false];
-//   if (idpwnm[0] in memdata) { /* <-- Watch this point, it requires memdata! */
-//     console.log(idpwnm[0] + " exists!");
-//     if (memdata[idpwnm[0]].pw === idpwnm[1]) {
-//       console.log("Valid password!");
-//       auth[1] = true;
-//     } else {
-//       console.log("Wrong password!");
-//     }
-//     if (memdata[idpwnm[0]].name === idpwnm[2]) {
-//       console.log("Extant name!");
-//       auth[2] = true;
-//     } else {
-//       if (memdata[idpwnm[0]].name === "") {
-//         console.log("Not checking for name");
-//       } else {
-//         console.log("Unextant name!");
-//       }
-//     }
-//     auth[0] = true;
-//   } else {
-//     console.log("Unextant ID!");
-//   }
-//   console.log("\n----------------\n");
-//   res.json(auth);
-// });
-// app.get("/g9artdata.json", function (req, res) {
-//   console.log("\n----------------\n");
-//   console.log("direct request for g9 articles");
-//   console.log("\n----------------\n");
-//   res.json(artdata); /* <-- Watch this point, it requires artdata! */
-// });
+app.get("/auth", function (req, res) {
+  const hash = req.headers.authorization.substring(6);
+  const tok = Base64.decode(hash);
+  const idpwnm = tok.split(":");
+  console.log("\n----------------\n");
+  console.log("direct request for g9 membership");
+  console.log("\n--NOW PARSING---\n");
+  console.log(req.headers.authorization);
+  console.log(hash + " -> " + tok);
+  console.log("ID: " + idpwnm[0]);
+  console.log("PW: " + idpwnm[1]);
+  console.log("Name: " + idpwnm[2]);
+  console.log("\n----------------\n");
+  let auth = [false, false, false];
+  if (idpwnm[0] in memdata) {
+    /* <-- Watch this point, it requires memdata! */
+    console.log(idpwnm[0] + " exists!");
+    if (memdata[idpwnm[0]].pw === idpwnm[1]) {
+      console.log("Valid password!");
+      auth[1] = true;
+    } else {
+      console.log("Wrong password!");
+    }
+    if (memdata[idpwnm[0]].name === idpwnm[2]) {
+      console.log("Extant name!");
+      auth[2] = true;
+    } else {
+      if (memdata[idpwnm[0]].name === "") {
+        console.log("Not checking for name");
+      } else {
+        console.log("Unextant name!");
+      }
+    }
+    auth[0] = true;
+  } else {
+    console.log("Unextant ID!");
+  }
+  console.log("\n----------------\n");
+  res.json(auth);
+});
+app.get("/g9artdata.json", function (req, res) {
+  console.log("\n----------------\n");
+  console.log("direct request for g9 articles");
+  console.log("\n----------------\n");
+  res.json(artdata); /* <-- Watch this point, it requires artdata! */
+});
 app.get("/image/:year/:month/:day/:name", (req, res, next) => {
   const fileYear = req.params.year;
   const fileMonth = req.params.month;
@@ -132,46 +133,46 @@ app.get("/image/:name", (req, res, next) => {
   );
 });
 
-// app.post("/auth", (req, res) => {
-//   console.log("\n----------------\n");
-//   console.log("\nNow registering a new member...\n");
-//   console.log(req.body);
-//   console.log("\n----------------\n");
-//   const newmemdata = Object.assign(memdata, req.body);
-//   console.log(newmemdata);
-//   console.log("\n----------------\n");
-//   fs.writeFileSync("./g9memdata.json", JSON.stringify(newmemdata));
-//   res.json(newmemdata);
-// });
-// app.post("/upload", upload.single("image"), function (req, res) {
-//   console.log("\n----------------\n");
-//   console.log(req.file);
-//   console.log(req.body);
-//   console.log("\n----------------\n");
-//   let uploadNextStep = true;
-//   let imagelink = "";
-//   if (uploadNextStep && (req.body.title === "" || req.body.writer === "")) {
-//     uploadNextStep = false;
-//   } else {
-//     imagelink += thisServer + "/" + req.file.path;
-//     console.log(imagelink);
-//   }
-//   const newart = {
-//     id: Date.now(),
-//     image: imagelink,
-//     title: req.body.title,
-//     text: req.body.text,
-//     writer: req.body.writer,
-//   };
-//   const uploadRes = { success: uploadNextStep, article: newart };
-//   if (uploadNextStep) {
-//     console.log(newart);
-//     artdata.push(newart);
-//     console.log(artdata);
-//     fs.writeFileSync("./g9artdata.json", JSON.stringify(artdata));
-//   }
-//   res.send(uploadRes);
-// });
+app.post("/auth", (req, res) => {
+  console.log("\n----------------\n");
+  console.log("\nNow registering a new member...\n");
+  console.log(req.body);
+  console.log("\n----------------\n");
+  const newmemdata = Object.assign(memdata, req.body);
+  console.log(newmemdata);
+  console.log("\n----------------\n");
+  fs.writeFileSync("./g9memdata.json", JSON.stringify(newmemdata));
+  res.json(newmemdata);
+});
+app.post("/upload", upload.single("image"), function (req, res) {
+  console.log("\n----------------\n");
+  console.log(req.file);
+  console.log(req.body);
+  console.log("\n----------------\n");
+  let uploadNextStep = true;
+  let imagelink = "";
+  if (uploadNextStep && (req.body.title === "" || req.body.writer === "")) {
+    uploadNextStep = false;
+  } else {
+    imagelink += thisServer + "/" + req.file.path;
+    console.log(imagelink);
+  }
+  const newart = {
+    id: Date.now(),
+    image: imagelink,
+    title: req.body.title,
+    text: req.body.text,
+    writer: req.body.writer,
+  };
+  const uploadRes = { success: uploadNextStep, article: newart };
+  if (uploadNextStep) {
+    console.log(newart);
+    artdata.push(newart);
+    console.log(artdata);
+    fs.writeFileSync("./g9artdata.json", JSON.stringify(artdata));
+  }
+  res.send(uploadRes);
+});
 
 app.listen(port, () => {
   console.log("\n----------------\n");
