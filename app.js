@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import cors from "cors";
 import multer from "multer";
 import Base64 from "./plugins/Base64.js"; // nodemon seems to accept only if ".js" is appended...
+const debugmode = true;
 const app = express();
 const corsOptions = {
   origin: ["http://localhost:9090"],
@@ -23,11 +24,12 @@ const storage = multer.diskStorage({
       (day < 10 ? "0" : "") + day
     }/`;
     if (!fs.existsSync("./image/" + varpath)) {
-      console.log("\n----------------\n");
-      console.log(
-        "\ncreating new directory...\n" + "./image/" + varpath + "\n"
-      );
-      console.log("\n----------------\n");
+      if (debugmode) console.log("\n----------------\n");
+      if (debugmode)
+        console.log(
+          "\ncreating new directory...\n" + "./image/" + varpath + "\n"
+        );
+      if (debugmode) console.log("\n----------------\n");
       fs.mkdirSync("./image/" + varpath, { recursive: true });
     }
     cb(null, "./image/" + varpath); // for some reason this doesn't work
@@ -46,9 +48,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  console.log("\n----------------\n");
-  console.log("Home request; the G9 server does not accept such command ;)");
-  console.log("\n----------------\n");
+  if (debugmode) console.log("\n----------------\n");
+  if (debugmode)
+    console.log("Home request; the G9 server does not accept such command ;)");
+  if (debugmode) console.log("\n----------------\n");
   res.send("Temporary page for home request; will be deleted later on");
 });
 
@@ -56,46 +59,46 @@ app.get("/auth", function (req, res) {
   const hash = req.headers.authorization.substring(6);
   const tok = Base64.decode(hash);
   const idpwnm = tok.split(":");
-  console.log("\n----------------\n");
-  console.log("direct request for g9 membership");
-  console.log("\n--NOW PARSING---\n");
-  console.log(req.headers.authorization);
-  console.log(hash + " -> " + tok);
-  console.log("ID: " + idpwnm[0]);
-  console.log("PW: " + idpwnm[1]);
-  console.log("Name: " + idpwnm[2]);
-  console.log("\n----------------\n");
+  if (debugmode) console.log("\n----------------\n");
+  if (debugmode) console.log("direct request for g9 membership");
+  if (debugmode) console.log("\n--NOW PARSING---\n");
+  if (debugmode) console.log(req.headers.authorization);
+  if (debugmode) console.log(hash + " -> " + tok);
+  if (debugmode) console.log("ID: " + idpwnm[0]);
+  if (debugmode) console.log("PW: " + idpwnm[1]);
+  if (debugmode) console.log("Name: " + idpwnm[2]);
+  if (debugmode) console.log("\n----------------\n");
   let auth = [false, false, false];
   if (idpwnm[0] in memdata) {
     /* <-- Watch this point, it requires memdata! */
-    console.log(idpwnm[0] + " exists!");
+    if (debugmode) console.log(idpwnm[0] + " exists!");
     if (memdata[idpwnm[0]].pw === idpwnm[1]) {
-      console.log("Valid password!");
+      if (debugmode) console.log("Valid password!");
       auth[1] = true;
     } else {
-      console.log("Wrong password!");
+      if (debugmode) console.log("Wrong password!");
     }
     if (memdata[idpwnm[0]].name === idpwnm[2]) {
-      console.log("Extant name!");
+      if (debugmode) console.log("Extant name!");
       auth[2] = true;
     } else {
       if (memdata[idpwnm[0]].name === "") {
-        console.log("Not checking for name");
+        if (debugmode) console.log("Not checking for name");
       } else {
-        console.log("Unextant name!");
+        if (debugmode) console.log("Unextant name!");
       }
     }
     auth[0] = true;
   } else {
-    console.log("Unextant ID!");
+    if (debugmode) console.log("Unextant ID!");
   }
-  console.log("\n----------------\n");
+  if (debugmode) console.log("\n----------------\n");
   res.json(auth);
 });
 app.get("/g9artdata.json", function (req, res) {
-  console.log("\n----------------\n");
-  console.log("direct request for g9 articles");
-  console.log("\n----------------\n");
+  if (debugmode) console.log("\n----------------\n");
+  if (debugmode) console.log("direct request for g9 articles");
+  if (debugmode) console.log("\n----------------\n");
   res.json(artdata); /* <-- Watch this point, it requires artdata! */
 });
 app.get("/image/:year/:month/:day/:name", (req, res, next) => {
@@ -103,7 +106,7 @@ app.get("/image/:year/:month/:day/:name", (req, res, next) => {
   const fileMonth = req.params.month;
   const fileDay = req.params.day;
   const fileName = req.params.name;
-  console.log(`Proper image request for ${fileName}.`);
+  if (debugmode) console.log(`Proper image request for ${fileName}.`);
   res.sendFile(
     fileName,
     {
@@ -113,14 +116,15 @@ app.get("/image/:year/:month/:day/:name", (req, res, next) => {
       if (err) {
         next(err);
       } else {
-        console.log(`Properly sent: ${fileName}`);
+        if (debugmode) console.log(`Properly sent: ${fileName}`);
       }
     }
   );
 });
 app.get("/image/:name", (req, res, next) => {
   const fileName = req.params.name;
-  console.log(`Legacy: Primitive image request for ${fileName}.`);
+  if (debugmode)
+    console.log(`Legacy: Primitive image request for ${fileName}.`);
   res.sendFile(
     fileName,
     { root: path.join(__dirname, "./image") },
@@ -128,35 +132,35 @@ app.get("/image/:name", (req, res, next) => {
       if (err) {
         next(err);
       } else {
-        console.log(`Primitively sent: ${fileName}`);
+        if (debugmode) console.log(`Primitively sent: ${fileName}`);
       }
     }
   );
 });
 
 app.post("/auth", (req, res) => {
-  console.log("\n----------------\n");
-  console.log("\nNow registering a new member...\n");
-  console.log(req.body);
-  console.log("\n----------------\n");
+  if (debugmode) console.log("\n----------------\n");
+  if (debugmode) console.log("\nNow registering a new member...\n");
+  if (debugmode) console.log(req.body);
+  if (debugmode) console.log("\n----------------\n");
   const newmemdata = Object.assign(memdata, req.body);
-  console.log(newmemdata);
-  console.log("\n----------------\n");
+  if (debugmode) console.log(newmemdata);
+  if (debugmode) console.log("\n----------------\n");
   fs.writeFileSync("./g9memdata.json", JSON.stringify(newmemdata));
   res.json(newmemdata);
 });
 app.post("/upload", upload.single("image"), function (req, res) {
-  console.log("\n----------------\n");
-  console.log(req.file);
-  console.log(req.body);
-  console.log("\n----------------\n");
+  if (debugmode) console.log("\n----------------\n");
+  if (debugmode) console.log(req.file);
+  if (debugmode) console.log(req.body);
+  if (debugmode) console.log("\n----------------\n");
   let uploadNextStep = true;
   let imagelink = "";
   if (uploadNextStep && (req.body.title === "" || req.body.writer === "")) {
     uploadNextStep = false;
   } else {
     imagelink += thisServer + "/" + req.file.path;
-    console.log(imagelink);
+    if (debugmode) console.log(imagelink);
   }
   const newart = {
     id: Date.now(),
@@ -167,9 +171,9 @@ app.post("/upload", upload.single("image"), function (req, res) {
   };
   const uploadRes = { success: uploadNextStep, article: newart };
   if (uploadNextStep) {
-    console.log(newart);
+    if (debugmode) console.log(newart);
     artdata.push(newart);
-    console.log(artdata);
+    if (debugmode) console.log(artdata);
     fs.writeFileSync("./g9artdata.json", JSON.stringify(artdata));
   }
   res.send(uploadRes);
