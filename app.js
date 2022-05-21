@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import cors from "cors";
 import multer from "multer";
 import Base64 from "./plugins/Base64.js"; // nodemon seems to accept only if ".js" is appended...
-const debugmode = true;
+const debugmode = true; // false in production
 const app = express();
 const corsOptions = {
   origin: ["http://localhost:9090"],
